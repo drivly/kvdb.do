@@ -1,0 +1,20 @@
+name = "kvdb-do"
+route = { pattern = "*/*", zone_name = "kvdb.do" }
+main = "worker.js"
+usage_model = "unbound"
+compatibility_date = "2022-09-23"
+
+services = [
+  { binding = "CTX", service = "ctx-do", environment = "production" }
+]
+
+kv_namespaces = [
+    { binding = "KVDB", id = "068251c03aa4404e82a1607904e09503", preview_id = "068251c03aa4404e82a1607904e09503" }
+]
+
+[durable_objects]
+bindings = [{name = "KVDO", class_name = "KVDO"}]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["KVDO"]

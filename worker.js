@@ -40,6 +40,8 @@ export default {
       // TODO: Implement this
       const [ resource, id ] = pathSegments
 
+      const { skip = 0, limit, ...filters } = query
+
       const data = resource ? (id ? database[hostname][resource][id] : database[hostname][resource]) : Object.keys(database[hostname]).reduce((acc, v) => ({...acc, [v]: `${origin}/${v}`}), {})
 
       return json({ api, data, user })
@@ -79,13 +81,20 @@ export class KVDO {
       if (!this.database[resource]) this.database[resource] = []
       const index = this.database[hostname][resource].findIndex(item => item.id == id)
 
-      if (method == 'POST') this.database[hostname][resource].push({ id: id ?? generateId(), ...body })
-      if (method == 'PUT') this.database[hostname][resource][index] = { id, ...body }
-      if (method == 'PATCH') this.database[hostname][resource][index] = { id, ...this.database[hostname][resource][index], ...body }
-      if (method == 'DELETE') this.database[hostname][resource][index] = undefined
+      let data = undefined
+
+      if (method == 'POST') {
+        data = { id: id ?? generateId(), ...body }
+        this.database[hostname][resource].push(data)
+      }
+      if (method == 'PUT') data = { id, ...body }
+      if (method == 'PATCH') data = { id, ...this.database[hostname][resource][index], ...body }
+      if (method == 'DELETE') data = undefined
+
+      this.database[hostname][resource][index] = data
 
       this.save()
-      return json(database)
+      return json({database, data})
 
     } catch ({name, message, stack}) {
       return json({ error: {name, message, stack} })

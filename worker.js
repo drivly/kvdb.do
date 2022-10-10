@@ -44,9 +44,9 @@ export default {
       // TODO: Implement this
       const [ resource, id ] = pathSegments
 
-      const { skip = 0, limit, ...filters } = query
+      const { skip, limit, ...filters } = query
 
-      const data = resource ? (id ? database[hostname][resource][id] : database[hostname][resource]) : Object.keys(database[hostname]).reduce((acc, v) => ({...acc, [v]: `${origin}/${v}`}), {})
+      const data = resource ? (id ? database[hostname][resource][id] : database[hostname][resource].slice(skip, limit)) : Object.keys(database[hostname]).reduce((acc, v) => ({...acc, [v]: `${origin}/${v}`}), {})
 
       return json({ api, data, user })
     } catch ({name, message, stack}) {

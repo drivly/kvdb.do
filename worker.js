@@ -53,13 +53,13 @@ export class KVDO {
   constructor(state, env) {
     this.state = state
     this.env = env
-    this.data = {}
+    this.database = {}
   }
   async save() {
     let error, delay, success = undefined
     while (!success && delay < 64000) {
       try {
-        success = await this.env.KVDB.put(this.hostname, JSON.stringify(this.data[this.hostname]))
+        success = await this.env.KVDB.put(this.hostname, JSON.stringify(this.database[this.hostname]))
       } catch ({name, message, stack}) {
         error = {name, message, stack}
         delay = delay ? delay * 2 : 1000
@@ -69,12 +69,30 @@ export class KVDO {
     }
   }
   async fetch(req) {
-    const { user, hostname, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req).then(res => res.json())
-    if (!this.hostname) this.hostname = hostname
-    if (!this.data[hostname]) this.data[hostname] = await this.env.KVDB.get(hostname, { type: 'json' })
-    return json({ api, data, user })
+    try {
+      const { user, method, hostname, pathname, rootPath, pathSegments, query, body } = await env.CTX.fetch(req).then(res => res.json())
+      if (!this.hostname) this.hostname = hostname
+      if (!this.database[hostname]) this.database[hostname] = await this.env.KVDB.get(hostname, { type: 'json' }) ?? {}
+
+      const [ resource, id ] = pathSegments
+
+      if (!this.database[resource]) this.database[resource] = []
+      const index = this.database[hostname][resource].findIndex(item => item.id == id)
+
+      if (method == 'POST') this.database[hostname][resource].push({ id: id ?? generateId, ...body })
+      if (method == 'PUT') this.database[hostname][resource][index] = { id, ...body }
+      if (method == 'PATCH') this.database[hostname][resource][index] = { id, ...this.database[hostname][resource][index], ...body }
+      if (method == 'DELETE') this.database[hostname][resource][index] = undefined
+
+      this.save()
+      return json(database)
+
+    } catch ({name, message, stack}) {
+      return json({ error: {name, message, stack} })
+    }
   }
 }
 
 const json = obj => new Response(JSON.stringify(obj, null, 2), { headers: { 'content-type': 'application/json; charset=utf-8' }})
 const sleep = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds))
+const generateId = () => Math.random().toString(36).slice(2, 10)

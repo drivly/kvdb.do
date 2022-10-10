@@ -33,14 +33,27 @@ export default {
     try {
       if (rootPath) return json({ api, gettingStarted, examples, user })
       if (!data[hostname]) data[hostname] = await env.KVDB.get(hostname, { type: 'json' })
+      if (!user.authenticated) return Response.redirect('/login')
 
       // TODO: Implement this
       const [ resource, id ] = pathSegments
 
       return json({ api, data, user })
     } catch ({name, message, stack}) {
-      json({ error: {name, message, stack} })
+      return json({ error: {name, message, stack} })
     }
+  }
+}
+
+export class KVDO {
+  constructor(state, env) {
+    this.state = state
+    this.env = env
+  }
+  async fetch(req) {
+    const { user, hostname, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req).then(res => res.json())
+    if (!data[hostname]) data[hostname] = await env.KVDB.get(hostname, { type: 'json' })
+    return json({ api, data, user })
   }
 }
 

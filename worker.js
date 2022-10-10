@@ -29,7 +29,7 @@ const database = {}
 
 export default {
   fetch: async (req, env) => {
-    const { user, method, origin, hostname, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req).then(res => res.json())
+    const { user, method, origin, hostname, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req.clone()).then(res => res.json())
     try {
       // if (rootPath) return json({ api, gettingStarted, examples, user })
       if (!database[hostname]) database[hostname] = await env.KVDB.get(hostname, { type: 'json' }) ?? {}
@@ -41,10 +41,11 @@ export default {
         return json({ api, data, user })
       }
 
-      // TODO: Implement this
       const [ resource, id ] = pathSegments
 
       const { skip, limit, ...filters } = query
+
+      if (!database[hostname][resource]) database[hostname][resource] = []
 
       const data = resource ? (id ? 
           database[hostname][resource].find(item => item.id == id) : 

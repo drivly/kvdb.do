@@ -40,6 +40,8 @@ export default {
       // TODO: Implement this
       const [ resource, id ] = pathSegments
 
+      const data = resource ? (id ? database[hostname][resource][id] : database[hostname][resource]) : Object.keys(database[hostname]).reduce((acc, v) => ({...acc, [v]: `${origin}/${v}`}), {})
+
       return json({ api, data, user })
     } catch ({name, message, stack}) {
       return json({ error: {name, message, stack} })

@@ -49,7 +49,7 @@ export default {
 
       const data = resource ? (id ? 
           database[hostname][resource].find(item => item.id == id) : 
-          database[hostname][resource].slice(skip, limit)) : 
+          database[hostname][resource].slice(skip ? parseInt(skip) : 0, limit)) : 
           Object.keys(database[hostname]).reduce((acc, v) => ({...acc, [v]: `${origin}/${v}`}), {})
 
       return json({ api, data, user })

@@ -79,7 +79,7 @@ export class KVDO {
       if (!this.database[resource]) this.database[resource] = []
       const index = this.database[hostname][resource].findIndex(item => item.id == id)
 
-      if (method == 'POST') this.database[hostname][resource].push({ id: id ?? generateId, ...body })
+      if (method == 'POST') this.database[hostname][resource].push({ id: id ?? generateId(), ...body })
       if (method == 'PUT') this.database[hostname][resource][index] = { id, ...body }
       if (method == 'PATCH') this.database[hostname][resource][index] = { id, ...this.database[hostname][resource][index], ...body }
       if (method == 'DELETE') this.database[hostname][resource][index] = undefined

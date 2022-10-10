@@ -29,11 +29,13 @@ const data = {}
 
 export default {
   fetch: async (req, env) => {
-    const { user, hostname, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req).then(res => res.json())
+    const { user, method, hostname, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req).then(res => res.json())
     try {
       if (rootPath) return json({ api, gettingStarted, examples, user })
       if (!data[hostname]) data[hostname] = await env.KVDB.get(hostname, { type: 'json' })
       if (!user.authenticated) return Response.redirect('/login')
+
+      if (method != 'GET') return env.KBDO.get(env.KBDO.idFromName(hostname)).fetch
 
       // TODO: Implement this
       const [ resource, id ] = pathSegments
@@ -49,12 +51,28 @@ export class KVDO {
   constructor(state, env) {
     this.state = state
     this.env = env
+    this.data = {}
+  }
+  async save() {
+    let error, delay, success = undefined
+    while (!success && delay < 64000) {
+      try {
+        success = await this.env.KVDB.put(this.hostname, JSON.stringify(this.data[this.hostname]))
+      } catch ({name, message, stack}) {
+        error = {name, message, stack}
+        delay = delay ? delay * 2 : 1000
+        console.log({error, delay})
+        await sleep(delay)
+      }
+    }
   }
   async fetch(req) {
     const { user, hostname, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req).then(res => res.json())
-    if (!data[hostname]) data[hostname] = await env.KVDB.get(hostname, { type: 'json' })
+    if (!this.hostname) this.hostname = hostname
+    if (!this.data[hostname]) this.data[hostname] = await this.env.KVDB.get(hostname, { type: 'json' })
     return json({ api, data, user })
   }
 }
 
 const json = obj => new Response(JSON.stringify(obj, null, 2), { headers: { 'content-type': 'application/json; charset=utf-8' }})
+const sleep = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds))

@@ -30,14 +30,17 @@ const data = {}
 export default {
   fetch: async (req, env) => {
     const { user, hostname, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req).then(res => res.json())
-    if (rootPath) return json({ api, gettingStarted, examples, user })
-    if (!data[hostname]) data[hostname] = await env.KVDB.get(hostname, { type: 'json' })
-    
-    // TODO: Implement this
-    const [ resource, id ] = pathSegments
-//     const data = { resource, id, hello: user.city }
-    
-    return json({ api, data, user })
+    try {
+      if (rootPath) return json({ api, gettingStarted, examples, user })
+      if (!data[hostname]) data[hostname] = await env.KVDB.get(hostname, { type: 'json' })
+
+      // TODO: Implement this
+      const [ resource, id ] = pathSegments
+
+      return json({ api, data, user })
+    } catch ({name, message, stack}) {
+      json({ error: {name, message, stack} })
+    }
   }
 }
 

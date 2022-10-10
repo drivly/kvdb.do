@@ -31,7 +31,7 @@ export default {
   fetch: async (req, env) => {
     const { user, method, hostname, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req).then(res => res.json())
     try {
-      if (rootPath) return json({ api, gettingStarted, examples, user })
+      // if (rootPath) return json({ api, gettingStarted, examples, user })
       if (!data[hostname]) data[hostname] = await env.KVDB.get(hostname, { type: 'json' })
       if (!user.authenticated) return Response.redirect('/login')
 

@@ -35,7 +35,11 @@ export default {
       if (!database[hostname]) database[hostname] = await env.KVDB.get(hostname, { type: 'json' })
       if (!user.authenticated) return Response.redirect(origin + '/login')
 
-      if (method != 'GET') return env.KBDO.get(env.KBDO.idFromName(hostname)).fetch(req)
+      if (method != 'GET') {
+        const { database, data } = await env.KBDO.get(env.KBDO.idFromName(hostname)).fetch(req).then(res => res.json())
+        database[hostname] = database
+        return json({ api, data, user })
+      }
 
       // TODO: Implement this
       const [ resource, id ] = pathSegments

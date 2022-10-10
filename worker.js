@@ -29,6 +29,7 @@ const database = {}
 
 export default {
   fetch: async (req, env) => {
+    const start = new Date()
     const { user, method, origin, hostname, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req).then(res => res.json())
     try {
       // if (rootPath) return json({ api, gettingStarted, examples, user })
@@ -52,6 +53,8 @@ export default {
           database[hostname][resource].slice(skip ? parseInt(skip) : 0, limit)) : 
           Object.keys(database[hostname]).reduce((acc, v) => ({...acc, [v]: `${origin}/${v}`}), {})
 
+      user.requestMilliseconds = new Date() - start
+      
       return json({ api, data, user })
     } catch ({name, message, stack}) {
       return json({ error: {name, message, stack} })

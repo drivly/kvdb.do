@@ -16,6 +16,15 @@ export const api = {
   repo: 'https://github.com/drivly/kvdb.do',
 }
 
+export const gettingStarted = [
+  `If you don't already have a JSON Viewer Browser Extension, get that first:`,
+  `https://extensions.do`,
+]
+
+export const examples = {
+  listItems: 'https://templates.do/worker',
+}
+
 export default {
   fetch: async (req, env) => {
     const { user, hostname, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req).then(res => res.json())

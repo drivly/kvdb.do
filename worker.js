@@ -33,7 +33,7 @@ export default {
     try {
       // if (rootPath) return json({ api, gettingStarted, examples, user })
       if (!database[hostname]) database[hostname] = await env.KVDB.get(hostname, { type: 'json' }) ?? {}
-      if (!user.authenticated) return Response.redirect(origin + '/login')
+      // if (!user.authenticated) return Response.redirect(origin + '/login')
 
       if (method != 'GET') {
         const { database, data } = await env.KVDO.get(env.KVDO.idFromName(hostname)).fetch(req).then(res => res.json())

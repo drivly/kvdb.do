@@ -45,7 +45,7 @@ export default {
 
       const { skip, limit, ...filters } = query
 
-      if (!database[hostname][resource]) database[hostname][resource] = []
+      if (resource != '' && !database[hostname][resource]) database[hostname][resource] = []
 
       const data = resource ? (id ? 
           database[hostname][resource].find(item => item.id == id) : 

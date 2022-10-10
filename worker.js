@@ -25,17 +25,17 @@ export const examples = {
   listItems: 'https://templates.do/worker',
 }
 
-const data = {}
+const database = {}
 
 export default {
   fetch: async (req, env) => {
-    const { user, method, hostname, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req).then(res => res.json())
+    const { user, method, origin, hostname, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req).then(res => res.json())
     try {
       // if (rootPath) return json({ api, gettingStarted, examples, user })
-      if (!data[hostname]) data[hostname] = await env.KVDB.get(hostname, { type: 'json' })
-      if (!user.authenticated) return Response.redirect('/login')
+      if (!database[hostname]) database[hostname] = await env.KVDB.get(hostname, { type: 'json' })
+      if (!user.authenticated) return Response.redirect(origin + '/login')
 
-      if (method != 'GET') return env.KBDO.get(env.KBDO.idFromName(hostname)).fetch
+      if (method != 'GET') return env.KBDO.get(env.KBDO.idFromName(hostname)).fetch(req)
 
       // TODO: Implement this
       const [ resource, id ] = pathSegments

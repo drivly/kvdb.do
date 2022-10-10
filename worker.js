@@ -36,7 +36,7 @@ export default {
       if (!user.authenticated) return Response.redirect(origin + '/login')
 
       if (method != 'GET') {
-        const { database, data } = await env.KBDO.get(env.KBDO.idFromName(hostname)).fetch(req).then(res => res.json())
+        const { database, data } = await env.KVDO.get(env.KVDO.idFromName(hostname)).fetch(req).then(res => res.json())
         database[hostname] = database
         return json({ api, data, user })
       }

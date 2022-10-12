@@ -50,7 +50,7 @@ export default {
 
       const data = resource ? (id ? 
           database[hostname][resource].find(item => item.id == id) : 
-          database[hostname][resource].slice(skip ? parseInt(skip) : 0, limit)) : 
+          database[hostname][resource].slice(skip ? parseInt(skip) : 0, limit).map(i => ({ url: `${origin}/${resource}/${i.id}`, ...i }))) : 
           Object.keys(database[hostname]).reduce((acc, v) => ({...acc, [v]: `${origin}/${v}`}), {})
 
       user.responseMilliseconds = new Date() - start

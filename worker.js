@@ -17,7 +17,7 @@ export const api = {
   repo: 'https://github.com/drivly/kvdb.do',
 }
 
-export const endpoints: {
+export const endpoints = {
     listResources: 'https://namespace.kvdb.do',
     listItems: 'https://namespace.kvdb.do/:resource',
     getItem: 'https://namespace.kvdb.do/:resource/:id',

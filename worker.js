@@ -52,10 +52,16 @@ export default {
           database[hostname][resource].find(item => item.id == id) : 
           database[hostname][resource].slice(skip ? parseInt(skip) : 0, limit).map(i => ({ url: `${origin}/${resource}/${i.id}`, ...i }))) : 
           Object.keys(database[hostname]).reduce((acc, v) => ({...acc, [v]: `${origin}/${v}`}), {})
+      
+      const links = {
+        home: origin,
+        list: resource ? `${origin}/${resource}` : undefined,
+        item: id ? `${origin}/${resource}/${id}` : undefined,
+      }
 
       user.responseMilliseconds = new Date() - start
 
-      return json({ api, data, user })
+      return json({ api, links, data, user })
     } catch ({name, message, stack}) {
       return json({ error: {name, message, stack} })
     }

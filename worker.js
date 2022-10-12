@@ -6,15 +6,22 @@ export const api = {
   description: 'Simple KV-based Database',
   url: 'https://kvdb.do/api',
   type: 'https://apis.do/database',
-  endpoints: {
-    pluckFromURL: 'https://kvdb.do/:property/:url',
-    pluckFromPOST: 'https://kvdb.do/:property',
-  },
+//   endpoints: {
+//     listResources: 'https://namespace.kvdb.do',
+//     listItems: 'https://namespace.kvdb.do/:resource',
+//     getItem: 'https://namespace.kvdb.do/:resource/:id',
+//   },
   site: 'https://kvdb.do',
   login: 'https://kvdb.do/login',
   signup: 'https://kvdb.do/signup',
   repo: 'https://github.com/drivly/kvdb.do',
 }
+
+export const endpoints: {
+    listResources: 'https://namespace.kvdb.do',
+    listItems: 'https://namespace.kvdb.do/:resource',
+    getItem: 'https://namespace.kvdb.do/:resource/:id',
+  }
 
 export const gettingStarted = [
   `If you don't already have a JSON Viewer Browser Extension, get that first:`,
@@ -22,7 +29,9 @@ export const gettingStarted = [
 ]
 
 export const examples = {
-  listItems: 'https://templates.do/worker',
+  'List Northwind Resources': 'https://northwind.kvdb.do',
+  'List Northwind Customers': 'https://northwind.kvdb.do/Customer',
+  'Get Northwind Customer 1': 'https://northwind.kvdb.do/Customer/1',
 }
 
 const database = {}
@@ -30,9 +39,9 @@ const database = {}
 export default {
   fetch: async (req, env) => {
     const start = new Date()
-    const { user, method, origin, hostname, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req).then(res => res.json())
+    const { user, method, origin, hostname, subdomain, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req).then(res => res.json())
     try {
-      // if (rootPath) return json({ api, gettingStarted, examples, user })
+      if (rootPath && !subdomain) return json({ api, endpoints, examples, user })
       if (!database[hostname]) database[hostname] = await env.KVDB.get(hostname, { type: 'json', cacheTtl: 3600 }) ?? {}
       // if (!user.authenticated) return Response.redirect(origin + '/login')
 

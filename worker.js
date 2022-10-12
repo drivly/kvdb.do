@@ -99,6 +99,7 @@ export class KVDO {
   async fetch(req) {
     try {
       const { user, method, hostname, pathname, rootPath, pathSegments, query, body } = await env.CTX.fetch(req).then(res => res.json())
+      if (method == 'OPTIONS') return new Response(null, { headers: corsHeaders })
       if (!this.hostname) this.hostname = hostname
       if (!this.database[hostname]) this.database[hostname] = await this.env.KVDB.get(hostname, { type: 'json' }) ?? {}
 
@@ -126,6 +127,12 @@ export class KVDO {
       return json({ error: {name, message, stack} })
     }
   }
+}
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS',
+  'Access-Control-Max-Age': '86400',
 }
 
 const json = obj => new Response(JSON.stringify(obj, null, 2), { headers: { 'content-type': 'application/json; charset=utf-8' }})

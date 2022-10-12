@@ -135,6 +135,6 @@ const corsHeaders = {
   'Access-Control-Max-Age': '86400',
 }
 
-const json = obj => new Response(JSON.stringify(obj, null, 2), { headers: { 'content-type': 'application/json; charset=utf-8' }})
+const json = obj => new Response(JSON.stringify(obj, null, 2), { headers: { 'content-type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*' }})
 const sleep = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds))
 const generateId = () => Math.random().toString(36).slice(2, 10)

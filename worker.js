@@ -53,6 +53,7 @@ export default {
         return json({ api, data, user })
       }
 
+
       const [ resource, id ] = pathSegments
 
       const { skip, limit, ...filters } = query
@@ -99,6 +100,7 @@ export class KVDO {
     }
   }
   async fetch(req) {
+    console.log('inside DO')
     try {
       const { user, method, hostname, pathname, rootPath, pathSegments, query, body } = await env.CTX.fetch(req).then(res => res.json())
       if (method == 'OPTIONS') return new Response(null, { headers: corsHeaders })

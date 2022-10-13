@@ -41,6 +41,7 @@ export default {
     const start = new Date()
     const { user, method, origin, hostname, subdomain, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req.clone()).then(res => res.json())
     try {
+      if (method == 'OPTIONS') return new Response(null, { headers: corsHeaders })
       if (rootPath && !subdomain) return json({ api, endpoints, examples, user })
       if (!database[hostname]) database[hostname] = await env.KVDB.get(hostname, { type: 'json', cacheTtl: 3600 }) ?? {}
       // if (!user.authenticated) return Response.redirect(origin + '/login')
@@ -106,7 +107,6 @@ export class KVDO {
     const { user, method, hostname, pathname, rootPath, pathSegments, query, body } = await this.env.CTX.fetch(req).then(res => res.json())
     console.log('in DO:',{method, body})
     try {
-      if (method == 'OPTIONS') return new Response(null, { headers: corsHeaders })
       if (!this.hostname) this.hostname = hostname
       if (!this.database[hostname]) this.database[hostname] = await this.env.KVDB.get(hostname, { type: 'json' }) ?? {}
 

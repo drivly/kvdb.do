@@ -49,9 +49,9 @@ export default {
       console.log(Object.keys(database))
 
       if (method != 'GET') {
-        const { database, data } = await env.KVDO.get(env.KVDO.idFromName(hostname)).fetch(req).then(res => res.json())
+        const { updatedDatabase, data } = await env.KVDO.get(env.KVDO.idFromName(hostname)).fetch(req).then(res => res.json())
         console.log('Back in worker from DO with:', {data})
-        database[hostname] = database
+        database[hostname] = updatedDatabase
         return json({ api, data, user })
       }
 
@@ -138,8 +138,10 @@ export class KVDO {
 
       console.log('data merged: ',{data,index, id})
 
-      await this.save()
-      return json({database, data})
+      // await this.save()
+      const saveAttempt = await this.env.KVDB.put(this.hostname, JSON.stringify(this.database[this.hostname]))
+      console.log({saveAttempt})
+      return json({updatedDatabase: this.database[hostname], data})
 
     } catch ({name, message, stack}) {
       return json({ error: {name, message, stack, do: this.state.id.toString(), method, data} })

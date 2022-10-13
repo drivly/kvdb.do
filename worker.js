@@ -103,7 +103,8 @@ export class KVDO {
   async fetch(req) {
     console.log('inside DO')
     let data = undefined
-    const { user, method, hostname, pathname, rootPath, pathSegments, query, body } = await env.CTX.fetch(req).then(res => res.json())
+    const { user, method, hostname, pathname, rootPath, pathSegments, query, body } = await this.env.CTX.fetch(req).then(res => res.json())
+    console.log('in DO:',{method, body})
     try {
       if (method == 'OPTIONS') return new Response(null, { headers: corsHeaders })
       if (!this.hostname) this.hostname = hostname

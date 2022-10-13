@@ -39,7 +39,7 @@ const database = {}
 export default {
   fetch: async (req, env) => {
     const start = new Date()
-    const { user, method, origin, hostname, subdomain, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req).then(res => res.json())
+    const { user, method, origin, hostname, subdomain, pathname, rootPath, pathSegments, query } = await env.CTX.fetch(req.clone()).then(res => res.json())
     try {
       if (rootPath && !subdomain) return json({ api, endpoints, examples, user })
       if (!database[hostname]) database[hostname] = await env.KVDB.get(hostname, { type: 'json', cacheTtl: 3600 }) ?? {}

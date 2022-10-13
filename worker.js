@@ -117,19 +117,26 @@ export class KVDO {
       if (!this.database[hostname][resource]) this.database[hostname][resource] = []
       const index = this.database[hostname][resource].findIndex(item => item.id == id)
 
-      console.log({resource, id, index})
+      console.log('before mutation', {resource, id, index})
 
       if (method == 'POST') {
         data = { id: id ?? generateId(), ...body }
         this.database[hostname][resource].push(data)
+      } else if (index != -1) {
+
+        if (method == 'PUT') data = { id, ...body }
+        if (method == 'PATCH') data = { id, ...this.database[hostname][resource][index], ...body }
+        if (method == 'DELETE') data = undefined
+  
+  
+        this.database[hostname][resource][index] = data
+
+      } else {
+        return json({error: {name: 'Resource ID not found', message: `Resource ID '${id}' not found in '${resource}'`}})
       }
-      if (method == 'PUT') data = { id, ...body }
-      if (method == 'PATCH') data = { id, ...this.database[hostname][resource][index], ...body }
-      if (method == 'DELETE') data = undefined
 
-      console.log({data})
 
-      this.database[hostname][resource][index] = data
+      console.log('data merged: ',{data,index, id})
 
       await this.save()
       return json({database, data})

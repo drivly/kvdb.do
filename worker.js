@@ -126,6 +126,8 @@ export class KVDO {
       if (method == 'PATCH') data = { id, ...this.database[hostname][resource][index], ...body }
       if (method == 'DELETE') data = undefined
 
+      console.log({data})
+
       this.database[hostname][resource][index] = data
 
       this.save()

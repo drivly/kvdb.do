@@ -101,8 +101,9 @@ export class KVDO {
   }
   async fetch(req) {
     console.log('inside DO')
+    let data = undefined
+    const { user, method, hostname, pathname, rootPath, pathSegments, query, body } = await env.CTX.fetch(req).then(res => res.json())
     try {
-      const { user, method, hostname, pathname, rootPath, pathSegments, query, body } = await env.CTX.fetch(req).then(res => res.json())
       if (method == 'OPTIONS') return new Response(null, { headers: corsHeaders })
       if (!this.hostname) this.hostname = hostname
       if (!this.database[hostname]) this.database[hostname] = await this.env.KVDB.get(hostname, { type: 'json' }) ?? {}
@@ -115,8 +116,6 @@ export class KVDO {
       const index = this.database[hostname][resource].findIndex(item => item.id == id)
 
       console.log({resource, id, index})
-
-      let data = undefined
 
       if (method == 'POST') {
         data = { id: id ?? generateId(), ...body }
@@ -134,7 +133,7 @@ export class KVDO {
       return json({database, data})
 
     } catch ({name, message, stack}) {
-      return json({ error: {name, message, stack, do: this.state.id.toString()} })
+      return json({ error: {name, message, stack, do: this.state.id.toString(), method, data} })
     }
   }
 }

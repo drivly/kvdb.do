@@ -131,7 +131,7 @@ export class KVDO {
 
       this.database[hostname][resource][index] = data
 
-      this.save()
+      await this.save()
       return json({database, data})
 
     } catch ({name, message, stack}) {

@@ -132,7 +132,7 @@ export class KVDO {
       return json({database, data})
 
     } catch ({name, message, stack}) {
-      return json({ error: {name, message, stack} })
+      return json({ error: {name, message, stack, do: this.state.id.toString()} })
     }
   }
 }

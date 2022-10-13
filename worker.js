@@ -49,6 +49,7 @@ export default {
 
       if (method != 'GET') {
         const { database, data } = await env.KVDO.get(env.KVDO.idFromName(hostname)).fetch(req).then(res => res.json())
+        console.log('Back in worker from DO with:', {data})
         database[hostname] = database
         return json({ api, data, user })
       }

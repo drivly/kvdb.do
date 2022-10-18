@@ -43,7 +43,7 @@ export default {
     try {
       if (method == 'OPTIONS') return new Response(null, { headers: corsHeaders })
       if (rootPath && !subdomain) return json({ api, endpoints, examples, user })
-      if (!database[hostname]) database[hostname] = await env.KVDB.get(hostname, { type: 'json', cacheTtl: 10 }) ?? {} //  cacheTtl: 3600
+      if (!database[hostname]) database[hostname] = await env.KVDB.get(hostname, { type: 'json', cacheTtl: 60 }) ?? {} //  cacheTtl: 3600
       // if (!user.authenticated) return Response.redirect(origin + '/login')
 
       console.log(Object.keys(database))
